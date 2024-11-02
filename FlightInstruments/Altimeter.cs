@@ -43,7 +43,6 @@ namespace FlightInstruments
             int radius = Math.Min(Width, Height) / 2 - 20;
 
             // Draw the outer frame with screws
-            DrawOuterFrame(g, centerX, centerY, radius);
 
             // Draw the black background and gray dial ring
 
@@ -61,9 +60,12 @@ namespace FlightInstruments
             // Draw tick marks and numbers
             DrawDial(g, centerX, centerY, radius);
 
+            DrawDashedPie(g, 90 - 40, 80, 0.25);
+
             // Draw the needle with an arrow tip
             DrawLongNeedle(g, centerX, centerY, radius);
             DrawShortNeedle(g, centerX, centerY, radius);
+
 
             // Draw the central cover circle to hide the needle base
             DrawCenterCover(g);
@@ -73,7 +75,7 @@ namespace FlightInstruments
 
 
             // Draw side labels with unit and serial numbers
-            DrawSideLabels(g, centerX, centerY, radius);
+            //DrawSideLabels(g, centerX, centerY, radius);
         }
 
         private void DrawLongNeedle(Graphics g, int centerX, int centerY, int radius)
@@ -206,18 +208,7 @@ namespace FlightInstruments
 
 
 
-        private void DrawOuterFrame(Graphics g, int centerX, int centerY, int radius)
-        {
-            int screwOffset = radius + 20;
-            int screwSize = 12;
 
-            // Draw screws in an octagonal layout
-            Brush screwBrush = Brushes.Gold;
-            g.FillEllipse(screwBrush, centerX - screwOffset, centerY - screwOffset, screwSize, screwSize); // Top left
-            g.FillEllipse(screwBrush, centerX + screwOffset - screwSize, centerY - screwOffset, screwSize, screwSize); // Top right
-            g.FillEllipse(screwBrush, centerX - screwOffset, centerY + screwOffset - screwSize, screwSize, screwSize); // Bottom left
-            g.FillEllipse(screwBrush, centerX + screwOffset - screwSize, centerY + screwOffset - screwSize, screwSize, screwSize); // Bottom right
-        }
 
         private void DrawDial(Graphics g, int centerX, int centerY, int radius)
         {
@@ -296,32 +287,73 @@ namespace FlightInstruments
 
 
 
-        private void DrawSideLabels(Graphics g, int centerX, int centerY, int radius)
+        private void DrawDashedPie(Graphics g,  double startAngle, double sweepAngle, double factor)
         {
-//            // Proportional font size based on radius
-//            float fontSize = radius * 0.05f; // Adjust factor as needed for proper scaling
-//            float horizontalOffset = radius * 0.45f; // Horizontal offset from the center for labels
-//            float verticalSpacing = radius * 0.07f; // Vertical spacing between labels
-//
-//            // Create font dynamically based on radius
-//            using (Font labelFont = new Font("Arial", fontSize, FontStyle.Bold))
-//            {
-//                // Measure label height based on the font size
-//                float labelHeight = g.MeasureString("S Nr. 05453", labelFont).Height;
-//
-//                // X position for right-aligned labels, offset by a fraction of the radius
-//                float labelX = centerX + horizontalOffset;
-//
-//                // Calculate Y positions for each label, with vertical spacing between them
-//                float serialLabelY = centerY - labelHeight - verticalSpacing;
-//                float unitLabelY = centerY - (labelHeight / 2) - verticalSpacing / 2; // Centered vertically
-//                float wnrLabelY = centerY - labelHeight /2 + verticalSpacing;
-//
-//                // Draw each label at the calculated positions
-//                g.DrawString("S Nr. 05453", labelFont, Brushes.White, labelX, serialLabelY);
-//                g.DrawString("knots", labelFont, Brushes.White, labelX, unitLabelY);
-//                g.DrawString("WNr. 69573", labelFont, Brushes.White, labelX, wnrLabelY);
-//            }
+            
+            Rectangle bounds = new Rectangle((int)(Width * factor), (int)(Height * factor), (int)(Width * (1 - 2 * factor)), (int)(Height * (1 - 2 * factor)));
+            // Set up smoothing for better visual quality
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            // Draw solid pie slice
+            using (SolidBrush solidBrush = new SolidBrush(Color.Black)) // Adjust color as needed
+            {
+                //g.FillPie(solidBrush, bounds, (float)startAngle, (float)sweepAngle);
+            }
+
+            // Overlay dashed fill
+            using (GraphicsPath path = new GraphicsPath())
+            {
+                // Add the same pie shape to the path
+                path.AddPie(bounds, (float)startAngle, (float)sweepAngle);
+                g.DrawPath(new Pen(Color.Black, 3), path);
+
+
+                //path.Reset();
+                path.AddPie(bounds, (float)startAngle, (float)(sweepAngle * (CurrentValue >= 10000.0 ? 0.0f : (CurrentValue) / 10000.0)));
+                // Use a HatchBrush to create a dashed pattern overlay
+                using (HatchBrush dashedFillBrush = new HatchBrush(HatchStyle.WideDownwardDiagonal, Color.White, Color.Transparent))
+                {
+                    g.FillPath(dashedFillBrush, path);
+                }
+            }
+
+            // Optionally, draw a solid outline around the pie slice
+            //using (Pen outlinePen = new Pen(Color.Black, 2)) // Adjust color and width as needed
+            //{
+            //    g.DrawArc(outlinePen, bounds, (float)startAngle, (float)sweepAngle);
+            //    // Draw lines from the center to the start and end of the arc
+            //    g.DrawLine(outlinePen, bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2,
+            //               bounds.Left + bounds.Width / 2 + (int)(bounds.Width / 2 * Math.Cos(startAngle * Math.PI / 180)),
+            //               bounds.Top + bounds.Height / 2 + (int)(bounds.Height / 2 * Math.Sin(startAngle * Math.PI / 180)));
+            //    g.DrawLine(outlinePen, bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2,
+            //               bounds.Left + bounds.Width / 2 + (int)(bounds.Width / 2 * Math.Cos((startAngle + sweepAngle) * Math.PI / 180)),
+            //               bounds.Top + bounds.Height / 2 + (int)(bounds.Height / 2 * Math.Sin((startAngle + sweepAngle) * Math.PI / 180)));
+            //}
+
+            //            // Proportional font size based on radius
+            //            float fontSize = radius * 0.05f; // Adjust factor as needed for proper scaling
+            //            float horizontalOffset = radius * 0.45f; // Horizontal offset from the center for labels
+            //            float verticalSpacing = radius * 0.07f; // Vertical spacing between labels
+            //
+            //            // Create font dynamically based on radius
+            //            using (Font labelFont = new Font("Arial", fontSize, FontStyle.Bold))
+            //            {
+            //                // Measure label height based on the font size
+            //                float labelHeight = g.MeasureString("S Nr. 05453", labelFont).Height;
+            //
+            //                // X position for right-aligned labels, offset by a fraction of the radius
+            //                float labelX = centerX + horizontalOffset;
+            //
+            //                // Calculate Y positions for each label, with vertical spacing between them
+            //                float serialLabelY = centerY - labelHeight - verticalSpacing;
+            //                float unitLabelY = centerY - (labelHeight / 2) - verticalSpacing / 2; // Centered vertically
+            //                float wnrLabelY = centerY - labelHeight /2 + verticalSpacing;
+            //
+            //                // Draw each label at the calculated positions
+            //                g.DrawString("S Nr. 05453", labelFont, Brushes.White, labelX, serialLabelY);
+            //                g.DrawString("knots", labelFont, Brushes.White, labelX, unitLabelY);
+            //                g.DrawString("WNr. 69573", labelFont, Brushes.White, labelX, wnrLabelY);
+            //            }
         }
 
         protected override void OnUDPDataReceived(string udpData)

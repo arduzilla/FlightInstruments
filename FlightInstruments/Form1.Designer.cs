@@ -35,7 +35,7 @@
             // 
             // winterVarioControl1
             // 
-            winterVarioControl1.Location = new Point(72, 395);
+            winterVarioControl1.Location = new Point(457, 223);
             winterVarioControl1.Name = "winterVarioControl1";
             winterVarioControl1.Size = new Size(560, 457);
             winterVarioControl1.TabIndex = 0;
@@ -51,9 +51,9 @@
             // 
             // altimeterControl1
             // 
-            altimeterControl1.Location = new Point(983, 232);
+            altimeterControl1.Location = new Point(983, 223);
             altimeterControl1.Name = "altimeterControl1";
-            altimeterControl1.Size = new Size(503, 439);
+            altimeterControl1.Size = new Size(517, 448);
             altimeterControl1.TabIndex = 2;
             altimeterControl1.TargetValue = 0D;
             // 
