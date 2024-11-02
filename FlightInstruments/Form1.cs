@@ -39,7 +39,7 @@ namespace FlightInstruments
                 {
                     this.Invoke((Action)(() =>
                     {
-                        this.winterVarioControl1.VerticalSpeed = GetRandomValue();
+                        this.winterVarioControl1.TargetValue = GetRandomValue();
                         this.winterVarioControl1.Invalidate();
                     }));
                     Thread.Sleep(500);

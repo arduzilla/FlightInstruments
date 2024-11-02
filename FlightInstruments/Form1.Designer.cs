@@ -38,7 +38,7 @@
             winterVarioControl1.Name = "winterVarioControl1";
             winterVarioControl1.Size = new Size(456, 440);
             winterVarioControl1.TabIndex = 0;
-            winterVarioControl1.VerticalSpeed = 0D;
+            winterVarioControl1.TargetValue = 0D;
             // 
             // condorudpListener1
             // 

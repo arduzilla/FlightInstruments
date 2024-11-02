@@ -21,63 +21,16 @@ namespace FlightInstruments
     using System.Drawing.Drawing2D;
     using System.Windows.Forms;
 
-    public partial class WinterVarioControl : CondorControl
+    public partial class WinterVarioControl : InstrumentBase
     {
-        private double targetSpeed = 3.0; // The speed we want to animate to
-        private double currentSpeed = 3.0; // The speed currently displayed by the needle
-        private Timer animationTimer;
-
         public WinterVarioControl()
         {
             DoubleBuffered = true;
             this.Size = new Size(300, 300);
-
-            // Initialize the animation timer
-            animationTimer = new Timer();
-            animationTimer.Interval = 10; // 10ms for smooth updates within 250ms total
-            animationTimer.Tick += AnimationTimer_Tick;
         }
 
-        public double VerticalSpeed
+        protected override void DrawInstrument(PaintEventArgs e)
         {
-            get { return targetSpeed; }
-            set
-            {
-                // Clamp the target speed to the -10 to 10 range
-                targetSpeed = Math.Max(-10, Math.Min(10, value));
-
-                // Start the animation timer to move the needle to the new target speed
-                if (!animationTimer.Enabled)
-                {
-                    animationTimer.Start();
-                }
-            }
-        }
-
-        private void AnimationTimer_Tick(object? sender, EventArgs e)
-        {
-            // Calculate the step size to reach targetSpeed within 250ms
-            double step = (targetSpeed - currentSpeed) * 0.1;
-
-            // If the difference is small, snap to targetSpeed and stop the timer
-            if (Math.Abs(targetSpeed - currentSpeed) < 0.1)
-            {
-                currentSpeed = targetSpeed;
-                animationTimer.Stop();
-            }
-            else
-            {
-                // Smoothly move currentSpeed towards targetSpeed
-                currentSpeed += step;
-            }
-
-            // Redraw the control with the updated currentSpeed
-            Invalidate();
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
             DrawVario(e.Graphics);
         }
 
@@ -125,7 +78,7 @@ namespace FlightInstruments
         private void DrawNeedle(Graphics g, int centerX, int centerY, int radius)
         {
             // Map -10 to +10 range to an angle from -150 to +150 degrees around the dial
-            double needleAngle = 180 + (currentSpeed * 300 / 20);
+            double needleAngle = 180 + (CurrentValue * 300 / 20);
 
             // Define needle dimensions proportionally
             int needleLength = (int)(radius * 1.0);         // Length of the needle as 90% of the radius
@@ -378,7 +331,8 @@ namespace FlightInstruments
                 // Check if the "vario" key exists and is a valid float
                 if (jsonObject.TryGetValue("vario", out JToken varioToken) && varioToken.Type == JTokenType.Float)
                 {
-                    VerticalSpeed = varioToken.ToObject<float>(); // Update the property based on JSON data
+                    double val = varioToken.ToObject<double>();
+                    TargetValue = val; // Update the property based on JSON data
                 }
             }
             catch (Exception ex)
