@@ -19,41 +19,41 @@ Most probable units - TBC when we got the condor
 
 | Parameter          | Description                           | Data Type | Unit               |
 |--------------------|---------------------------------------|-----------|--------------------|
-| `time`             | Time in-game                          | `float`   | Hours (decimal)    |
-| `airspeed`         | Current airspeed                      | `float`   | m/s                |
-| `altitude`         | Altimeter reading                     | `float`   | Meters or feet     |
-| `vario`            | Pneumatic variometer reading          | `float`   | m/s                |
-| `evario`           | Electronic variometer reading         | `float`   | m/s                |
-| `nettovario`       | Netto variometer value                | `float`   | m/s                |
-| `integrator`       | Integrator value                      | `float`   | m/s                |
-| `compass`          | Compass heading                       | `float`   | Degrees            |
-| `slipball`         | Slip ball deflection angle            | `float`   | Radians            |
-| `turnrate`         | Turn indicator reading                | `float`   | Radians/s          |
-| `yawstringangle`   | Yaw string angle                      | `float`   | Radians            |
-| `radiofrequency`   | Active radio frequency                | `float`   | MHz                |
-| `yaw`              | Yaw angle                             | `float`   | Radians            |
-| `pitch`            | Pitch angle                           | `float`   | Radians            |
-| `bank`             | Bank angle                            | `float`   | Radians            |
-| `quaternionx`      | Quaternion X component                | `float`   | Unitless           |
-| `quaterniony`      | Quaternion Y component                | `float`   | Unitless           |
-| `quaternionz`      | Quaternion Z component                | `float`   | Unitless           |
-| `quaternionw`      | Quaternion W component                | `float`   | Unitless           |
-| `ax`               | Acceleration in X                     | `float`   | m/s²               |
-| `ay`               | Acceleration in Y                     | `float`   | m/s²               |
-| `az`               | Acceleration in Z                     | `float`   | m/s²               |
-| `vx`               | Speed vector in X                     | `float`   | m/s                |
-| `vy`               | Speed vector in Y                     | `float`   | m/s                |
-| `vz`               | Speed vector in Z                     | `float`   | m/s                |
-| `rollrate`         | Roll rate                             | `float`   | Radians/s          |
-| `pitchrate`        | Pitch rate                            | `float`   | Radians/s          |
-| `yawrate`          | Yaw rate                              | `float`   | Radians/s          |
-| `gforce`           | G-force factor                        | `float`   | Unitless           |
-| `height`           | Height of CG above ground             | `float`   | Meters             |
-| `wheelheight`      | Height of wheel above ground          | `float`   | Meters             |
-| `turbulencestrength` | Turbulence strength                | `float`   | Unitless           |
-| `surfaceroughness` | Surface roughness factor              | `float`   | Unitless           |
-| `MC`               | MacCready setting                     | `float`   | m/s                |
-| `water`            | Water ballast content                 | `float`   | Kilograms          |
+| `time`             | Time in-game                          | `double`   | Hours (decimal)    |
+| `airspeed`         | Current airspeed                      | `double`   | m/s                |
+| `altitude`         | Altimeter reading                     | `double`   | Meters or feet     |
+| `vario`            | Pneumatic variometer reading          | `double`   | m/s                |
+| `evario`           | Electronic variometer reading         | `double`   | m/s                |
+| `nettovario`       | Netto variometer value                | `double`   | m/s                |
+| `integrator`       | Integrator value                      | `double`   | m/s                |
+| `compass`          | Compass heading                       | `double`   | Degrees            |
+| `slipball`         | Slip ball deflection angle            | `double`   | Radians            |
+| `turnrate`         | Turn indicator reading                | `double`   | Radians/s          |
+| `yawstringangle`   | Yaw string angle                      | `double`   | Radians            |
+| `radiofrequency`   | Active radio frequency                | `double`   | MHz                |
+| `yaw`              | Yaw angle                             | `double`   | Radians            |
+| `pitch`            | Pitch angle                           | `double`   | Radians            |
+| `bank`             | Bank angle                            | `double`   | Radians            |
+| `quaternionx`      | Quaternion X component                | `double`   | Unitless           |
+| `quaterniony`      | Quaternion Y component                | `double`   | Unitless           |
+| `quaternionz`      | Quaternion Z component                | `double`   | Unitless           |
+| `quaternionw`      | Quaternion W component                | `double`   | Unitless           |
+| `ax`               | Acceleration in X                     | `double`   | m/s²               |
+| `ay`               | Acceleration in Y                     | `double`   | m/s²               |
+| `az`               | Acceleration in Z                     | `double`   | m/s²               |
+| `vx`               | Speed vector in X                     | `double`   | m/s                |
+| `vy`               | Speed vector in Y                     | `double`   | m/s                |
+| `vz`               | Speed vector in Z                     | `double`   | m/s                |
+| `rollrate`         | Roll rate                             | `double`   | Radians/s          |
+| `pitchrate`        | Pitch rate                            | `double`   | Radians/s          |
+| `yawrate`          | Yaw rate                              | `double`   | Radians/s          |
+| `gforce`           | G-force factor                        | `double`   | Unitless           |
+| `height`           | Height of CG above ground             | `double`   | Meters             |
+| `wheelheight`      | Height of wheel above ground          | `double`   | Meters             |
+| `turbulencestrength` | Turbulence strength                 | `double`   | Unitless           |
+| `surfaceroughness` | Surface roughness factor              | `double`   | Unitless           |
+| `MC`               | MacCready setting                     | `double`   | m/s                |
+| `water`            | Water ballast content                 | `double`   | Kilograms          |
 
 ## Example Message
 
