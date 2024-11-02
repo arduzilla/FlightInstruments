@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             winterVarioControl1 = new WinterVarioControl();
+            condorudpListener1 = new CondorUDPListener();
             SuspendLayout();
             // 
             // winterVarioControl1
@@ -39,11 +40,19 @@
             winterVarioControl1.TabIndex = 0;
             winterVarioControl1.VerticalSpeed = 0D;
             // 
+            // condorudpListener1
+            // 
+            condorudpListener1.Location = new Point(1428, 917);
+            condorudpListener1.Name = "condorudpListener1";
+            condorudpListener1.Size = new Size(33, 30);
+            condorudpListener1.TabIndex = 1;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1522, 959);
+            Controls.Add(condorudpListener1);
             Controls.Add(winterVarioControl1);
             Name = "Form1";
             Text = "Form1";
@@ -53,5 +62,6 @@
         #endregion
 
         private WinterVarioControl winterVarioControl1;
+        private CondorUDPListener condorudpListener1;
     }
 }

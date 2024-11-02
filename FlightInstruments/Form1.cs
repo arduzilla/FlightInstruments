@@ -7,7 +7,11 @@ namespace FlightInstruments
         public Form1()
         {
             InitializeComponent();
-            Task.Run(() => UpdateVerticalSpeed());
+
+            CondorUdpTestSender condorUdpTestSender = new CondorUdpTestSender();
+
+            condorUdpTestSender.StartSendingTestData(500);
+            //Task.Run(() => UpdateVerticalSpeed());
         }
 
         private static readonly Random random = new Random();

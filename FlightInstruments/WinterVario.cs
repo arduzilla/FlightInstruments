@@ -15,12 +15,13 @@ using System.Windows.Forms;
 
 namespace FlightInstruments
 {
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Drawing;
     using System.Drawing.Drawing2D;
     using System.Windows.Forms;
 
-    public partial class WinterVarioControl : UserControl
+    public partial class WinterVarioControl : CondorControl
     {
         private double targetSpeed = 3.0; // The speed we want to animate to
         private double currentSpeed = 3.0; // The speed currently displayed by the needle
@@ -53,7 +54,7 @@ namespace FlightInstruments
             }
         }
 
-        private void AnimationTimer_Tick(object sender, EventArgs e)
+        private void AnimationTimer_Tick(object? sender, EventArgs e)
         {
             // Calculate the step size to reach targetSpeed within 250ms
             double step = (targetSpeed - currentSpeed) * 0.1;
@@ -364,6 +365,25 @@ namespace FlightInstruments
                 g.DrawString("S Nr. 05453", labelFont, Brushes.White, labelX, serialLabelY);
                 g.DrawString("knots", labelFont, Brushes.White, labelX, unitLabelY);
                 g.DrawString("WNr. 69573", labelFont, Brushes.White, labelX, wnrLabelY);
+            }
+        }
+
+        protected override void OnUDPDataReceived(string udpData)
+        {
+            try
+            {
+                // Parse the JSON data
+                var jsonObject = JObject.Parse(udpData);
+
+                // Check if the "vario" key exists and is a valid float
+                if (jsonObject.TryGetValue("vario", out JToken varioToken) && varioToken.Type == JTokenType.Float)
+                {
+                    VerticalSpeed = varioToken.ToObject<float>(); // Update the property based on JSON data
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error parsing JSON data: {ex.Message}");
             }
         }
     }
