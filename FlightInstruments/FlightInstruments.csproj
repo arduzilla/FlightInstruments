@@ -13,7 +13,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="ElectronicsVario.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ASI.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="InstrumentBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Altimeter.cs">
       <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>

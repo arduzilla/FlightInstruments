@@ -21,9 +21,9 @@ namespace FlightInstruments
     using System.Drawing.Drawing2D;
     using System.Windows.Forms;
 
-    public partial class WinterVarioControl : InstrumentBase
+    public partial class AltimeterControl : InstrumentBase
     {
-        public WinterVarioControl()
+        public AltimeterControl()
         {
             DoubleBuffered = true;
             this.Size = new Size(300, 300);
@@ -31,10 +31,10 @@ namespace FlightInstruments
 
         protected override void DrawInstrument(PaintEventArgs e)
         {
-            DrawVario(e.Graphics);
+            DrawAltimeter(e.Graphics);
         }
 
-        private void DrawVario(Graphics g)
+        private void DrawAltimeter(Graphics g)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -62,23 +62,24 @@ namespace FlightInstruments
             DrawDial(g, centerX, centerY, radius);
 
             // Draw the needle with an arrow tip
-            DrawNeedle(g, centerX, centerY, radius);
+            DrawLongNeedle(g, centerX, centerY, radius);
+            DrawShortNeedle(g, centerX, centerY, radius);
 
             // Draw the central cover circle to hide the needle base
             DrawCenterCover(g);
 
             // Draw the center text (Winter, knots)
             //DrawCenterText(g, centerX, centerY);
-            DrawWinterLogo(g);
+
 
             // Draw side labels with unit and serial numbers
             DrawSideLabels(g, centerX, centerY, radius);
         }
 
-        private void DrawNeedle(Graphics g, int centerX, int centerY, int radius)
+        private void DrawLongNeedle(Graphics g, int centerX, int centerY, int radius)
         {
             // Map -10 to +10 range to an angle from -150 to +150 degrees around the dial
-            double needleAngle = 180 + (CurrentValue * 300 / 20);
+            double needleAngle = -90 + ((CurrentValue % 1000) * 360 / 1000);
 
             // Define needle dimensions proportionally
             int needleLength = (int)(radius * 1.0);         // Length of the needle as 90% of the radius
@@ -139,63 +140,67 @@ namespace FlightInstruments
             }
         }
 
-
-        private void DrawWinterLogo(Graphics g)
+        private void DrawShortNeedle(Graphics g, int centerX, int centerY, int radius)
         {
-            // Calculate the center of the control
-            int centerX = this.Width / 2;
-            int centerY = this.Height / 2;
+            // Map -10 to +10 range to an angle from -150 to +150 degrees around the dial
+            double needleAngle = -90 + ((CurrentValue / 1000) * 360 / 10);
 
-            // Define the radius for the center ring where the logo will fit
-            int centerRingRadius = Math.Min(this.Width, this.Height) / 8; // Adjust this divisor to fit precisely within the center ring
+            // Define needle dimensions proportionally
+            int needleLength = (int)(radius * .6);         // Length of the needle as 90% of the radius
+            int needleWidth = (int)(radius * 0.1);         // Width of the needle as 5% of the radius
+            int triangleHeight = (int)(needleWidth * 1.5);  // Height of the triangle tip
 
-            // Define sizes relative to the center ring radius
-            float baseFontSize = centerRingRadius * 0.3f;     // Font size for "winter"
-            float arrowFontSize = centerRingRadius * 0.25f;    // Font size for arrows
-            float clockRadius = centerRingRadius * 0.1f;      // Size of the clock circle
-            float clockHandLength = clockRadius * 0.6f;       // Length of the clock hand
-
-            // Define colors and pens
-            Brush agedWhiteBrush = new SolidBrush(Color.FromArgb(240, 240, 220)); // Slightly aged white color
-            Pen agedWhitePen = new Pen(agedWhiteBrush, centerRingRadius * 0.05f); // Pen for the clock circle and hand
-
-            // Create fonts dynamically based on center ring radius
-            using (Font winterFont = new Font("Arial", baseFontSize, FontStyle.Bold))
-            using (Font arrowFont = new Font("Arial", arrowFontSize, FontStyle.Bold))
+            // Create the needle path at the origin (pointing up)
+            using (GraphicsPath needlePath = new GraphicsPath())
             {
-                // Draw "winter" text in the center
-                string winterText = "winter";
-                SizeF winterTextSize = g.MeasureString(winterText, winterFont);
-                float winterTextX = centerX - (winterTextSize.Width / 2);
-                float winterTextY = centerY - (winterTextSize.Height / 2);
-                g.DrawString(winterText, winterFont, agedWhiteBrush, winterTextX, winterTextY);
+                // Define the needle as a rectangle with a triangle at the end
+                needlePath.AddPolygon(new Point[]
+                {
+            new Point(0, -needleWidth / 2),                    // Left point of the rectangle
+            new Point(needleLength - triangleHeight, -needleWidth / 2), // Left side near the triangle
+            new Point(needleLength - triangleHeight, -needleWidth / 2), // Base of the triangle (left)
+            new Point(needleLength, 0),                        // Tip of the triangle
+            new Point(needleLength - triangleHeight, needleWidth / 2),  // Base of the triangle (right)
+            new Point(needleLength - triangleHeight, needleWidth / 2),  // Right side near the triangle
+            new Point(0, needleWidth / 2)                      // Right point of the rectangle
+                });
 
-                // Draw clock symbol above the "i" in "winter"
-                float clockCenterX = winterTextX + winterTextSize.Width * 0.32f; // Position above "i" in "winter"
-                float clockCenterY = winterTextY - clockRadius * -0.8f;
+                // Rotate the needle path to match the calculated angle
+                using (Matrix matrix = new Matrix())
+                {
+                    matrix.RotateAt((float)needleAngle, new PointF(0, 0));
+                    needlePath.Transform(matrix);
+                }
 
-                // Draw the clock circle
-                g.DrawEllipse(agedWhitePen, clockCenterX - clockRadius / 2, clockCenterY - clockRadius / 2, clockRadius, clockRadius);
+                // Define colors for needle and shadow
+                Color agedWhite = Color.FromArgb(255, 240, 240, 220); // Slightly yellowish, aged white
+                Brush agedWhiteBrush = new SolidBrush(agedWhite);
 
-                // Draw clock hand inside the circle
-                double handAngle = -45 * (Math.PI / 180); // Angle for clock hand
-                PointF handEnd = new PointF(
-                    clockCenterX + (float)(clockHandLength * Math.Cos(handAngle)),
-                    clockCenterY + (float)(clockHandLength * Math.Sin(handAngle))
-                );
-                g.DrawLine(agedWhitePen, clockCenterX, clockCenterY, handEnd.X, handEnd.Y);
+                Color shadowColor = Color.FromArgb(100, 50, 50, 50); // Semi-transparent dark color for shadow
+                Brush shadowBrush = new SolidBrush(shadowColor);
 
-                // Draw the up and down arrows above and below "winter" text
-                string upArrow = "↑";
-                string downArrow = "↓";
+                // Create and draw the shadow slightly offset
+                using (GraphicsPath shadowPath = (GraphicsPath)needlePath.Clone())
+                {
+                    using (Matrix shadowTranslateMatrix = new Matrix())
+                    {
+                        shadowTranslateMatrix.Translate(centerX + radius * 0.02f, centerY + radius * 0.02f); // Offset shadow by 2% of the radius
+                        shadowPath.Transform(shadowTranslateMatrix);
+                    }
 
-                SizeF arrowSize = g.MeasureString(upArrow, arrowFont);
-                float upArrowX = centerX - (arrowSize.Width / 2);
-                float upArrowY = winterTextY - arrowSize.Height - (centerRingRadius * 0.1f); // Position above "winter"
-                float downArrowY = winterTextY + winterTextSize.Height + (centerRingRadius * 0.1f); // Position below "winter"
+                    // Draw the shadow
+                    g.FillPath(shadowBrush, shadowPath);
+                }
 
-                g.DrawString(upArrow, arrowFont, agedWhiteBrush, upArrowX, upArrowY);
-                g.DrawString(downArrow, arrowFont, agedWhiteBrush, upArrowX, downArrowY);
+                // Translate the needle path to the center of the dial
+                using (Matrix translateMatrix = new Matrix())
+                {
+                    translateMatrix.Translate(centerX, centerY);
+                    needlePath.Transform(translateMatrix);
+                }
+
+                // Draw the needle
+                g.FillPath(agedWhiteBrush, needlePath);
             }
         }
 
@@ -230,17 +235,15 @@ namespace FlightInstruments
             Font numberFont = new Font("Arial", fontSize, FontStyle.Bold);
 
             // Iterate through each tick mark position from -10 to 10
-            for (int i = -10; i <= 10; i++)
+            for (int i = 0; i < 50; i++)
             {
                 // Calculate the angle for each tick mark position
                 double angle;
-                if (i == 10) angle = -30;       // 2 o'clock for 10
-                else if (i == -10) angle = 30;  // 4 o'clock for -10
-                else angle = 180 + (i * 300 / 20); // General spacing for other ticks
+                angle = -90 + i * 360 / 50; // General spacing for other ticks
 
                 double radian = angle * (Math.PI / 180);
 
-                bool isMajorTick = (i % 2 == 0); // Major ticks for even numbers
+                bool isMajorTick = (i % 5 == 0); // Major ticks for even numbers
                 int tickLength = isMajorTick ? majorTickLength : minorTickLength;
                 Pen tickPen = isMajorTick ? majorTickPen : minorTickPen;
 
@@ -260,7 +263,7 @@ namespace FlightInstruments
                 // Draw numbers for major ticks
                 if (isMajorTick && i != 0)
                 {
-                    string numberLabel = Math.Abs(i).ToString();
+                    string numberLabel = Math.Abs(i / 5).ToString();
                     SizeF labelSize = g.MeasureString(numberLabel, numberFont);
 
                     // Position numbers relative to the radius with a proportional offset
@@ -285,7 +288,7 @@ namespace FlightInstruments
         {
             int centerX = Width / 2;
             int centerY = Height / 2;
-            int radius = Math.Min(Width, Height) / 2 - 20;
+            int radius = Math.Min(Width, Height) / 4 ;
             int centerCircleRadius = (int)(radius * 0.4);
             g.FillEllipse(Brushes.Black, centerX - centerCircleRadius, centerY - centerCircleRadius, centerCircleRadius * 2, centerCircleRadius * 2);
         }
@@ -295,30 +298,30 @@ namespace FlightInstruments
 
         private void DrawSideLabels(Graphics g, int centerX, int centerY, int radius)
         {
-            // Proportional font size based on radius
-            float fontSize = radius * 0.05f; // Adjust factor as needed for proper scaling
-            float horizontalOffset = radius * 0.45f; // Horizontal offset from the center for labels
-            float verticalSpacing = radius * 0.07f; // Vertical spacing between labels
-
-            // Create font dynamically based on radius
-            using (Font labelFont = new Font("Arial", fontSize, FontStyle.Bold))
-            {
-                // Measure label height based on the font size
-                float labelHeight = g.MeasureString("S Nr. 05453", labelFont).Height;
-
-                // X position for right-aligned labels, offset by a fraction of the radius
-                float labelX = centerX + horizontalOffset;
-
-                // Calculate Y positions for each label, with vertical spacing between them
-                float serialLabelY = centerY - labelHeight - verticalSpacing;
-                float unitLabelY = centerY - (labelHeight / 2) - verticalSpacing / 2; // Centered vertically
-                float wnrLabelY = centerY - labelHeight /2 + verticalSpacing;
-
-                // Draw each label at the calculated positions
-                g.DrawString("S Nr. 05453", labelFont, Brushes.White, labelX, serialLabelY);
-                g.DrawString("knots", labelFont, Brushes.White, labelX, unitLabelY);
-                g.DrawString("WNr. 69573", labelFont, Brushes.White, labelX, wnrLabelY);
-            }
+//            // Proportional font size based on radius
+//            float fontSize = radius * 0.05f; // Adjust factor as needed for proper scaling
+//            float horizontalOffset = radius * 0.45f; // Horizontal offset from the center for labels
+//            float verticalSpacing = radius * 0.07f; // Vertical spacing between labels
+//
+//            // Create font dynamically based on radius
+//            using (Font labelFont = new Font("Arial", fontSize, FontStyle.Bold))
+//            {
+//                // Measure label height based on the font size
+//                float labelHeight = g.MeasureString("S Nr. 05453", labelFont).Height;
+//
+//                // X position for right-aligned labels, offset by a fraction of the radius
+//                float labelX = centerX + horizontalOffset;
+//
+//                // Calculate Y positions for each label, with vertical spacing between them
+//                float serialLabelY = centerY - labelHeight - verticalSpacing;
+//                float unitLabelY = centerY - (labelHeight / 2) - verticalSpacing / 2; // Centered vertically
+//                float wnrLabelY = centerY - labelHeight /2 + verticalSpacing;
+//
+//                // Draw each label at the calculated positions
+//                g.DrawString("S Nr. 05453", labelFont, Brushes.White, labelX, serialLabelY);
+//                g.DrawString("knots", labelFont, Brushes.White, labelX, unitLabelY);
+//                g.DrawString("WNr. 69573", labelFont, Brushes.White, labelX, wnrLabelY);
+//            }
         }
 
         protected override void OnUDPDataReceived(string udpData)
@@ -329,9 +332,9 @@ namespace FlightInstruments
                 var jsonObject = JObject.Parse(udpData);
 
                 // Check if the "vario" key exists and is a valid float
-                if (jsonObject.TryGetValue("vario", out JToken? varioToken) && varioToken != null && varioToken.Type == JTokenType.Float)
+                if (jsonObject.TryGetValue("altitude", out JToken? varioToken) && varioToken != null && varioToken.Type == JTokenType.Float)
                 {
-                    double val = varioToken.ToObject<double>();
+                    double val = varioToken.ToObject<double>() * 3.28084;
                     TargetValue = val; // Update the property based on JSON data
                 }
             }

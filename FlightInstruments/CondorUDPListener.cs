@@ -14,7 +14,7 @@ namespace FlightInstruments
     {
         private readonly List<Action<string>> callbacks = new List<Action<string>>();
         private readonly BackgroundWorker backgroundWorker = new BackgroundWorker();
-        private UdpClient udpClient;
+        private UdpClient? udpClient;
         private int port = 12345; // Default port, configurable in code
 
         // Port property that stops and restarts the listener if changed
@@ -59,7 +59,11 @@ namespace FlightInstruments
             if (udpClient == null)
             {
                 udpClient = new UdpClient(port);
-                backgroundWorker.RunWorkerAsync();
+                if (udpClient != null)
+                {
+                    backgroundWorker.RunWorkerAsync();
+                }
+                else throw new NullReferenceException("udpClient reference is null.");
             }
         }
 
@@ -85,10 +89,12 @@ namespace FlightInstruments
                 try
                 {
                     // Listen for UDP data
-                    byte[] data = udpClient.Receive(ref remoteEndPoint);
-                    string receivedData = Encoding.UTF8.GetString(data);
+                    byte[] data = udpClient?.Receive(ref remoteEndPoint);
+                    string receivedData;
 
-                    // Convert data to JSON
+                    if (data == null) continue;
+                    // Convert data to JSO
+                    receivedData = Encoding.UTF8.GetString(data);
                     string jsonData = ConvertToJson(receivedData);
 
                     // Call all registered callbacks with the JSON data

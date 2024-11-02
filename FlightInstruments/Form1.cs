@@ -20,6 +20,11 @@ namespace FlightInstruments
             // Generate a random double between -10 and 10
             return random.NextDouble() * 20 - 10;
         }
+        private double GetRandomAltitude()
+        {
+            // Generate a random double between -10 and 10
+            return random.NextDouble() * 10000.0;
+        }
         private void UpdateVerticalSpeed()
         {
             while (true)
