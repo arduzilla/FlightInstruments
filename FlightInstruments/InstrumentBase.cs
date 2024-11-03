@@ -62,11 +62,11 @@ namespace FlightInstruments
 
         private void AnimationTimer_Tick(object? sender, EventArgs e)
         {
-            // Calculate the step size to reach targetValue within 250ms
-            double step = (targetValue - currentValue) * 0.1;
+            // Calculate the step size to reach targetValue within 50ms
+            double step = (targetValue - currentValue) / 5;
 
             // If the difference is small, snap to targetValue and stop the timer
-            if (Math.Abs(targetValue - currentValue) < 0.1)
+            if (Math.Abs(targetValue - currentValue) <= step)
             {
                 currentValue = targetValue;
                 animationTimer.Stop();

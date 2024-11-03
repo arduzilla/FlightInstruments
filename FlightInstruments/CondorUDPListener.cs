@@ -128,7 +128,7 @@ namespace FlightInstruments
         private string ConvertToJson(string data)
         {
             var keyValuePairs = new Dictionary<string, object>();
-            var dataParts = data.Split(';');
+            var dataParts = data.Split("\r\n");
 
             foreach (var part in dataParts)
             {

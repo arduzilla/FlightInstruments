@@ -8,9 +8,9 @@ namespace FlightInstruments
         {
             InitializeComponent();
 
-            CondorUdpTestSender condorUdpTestSender = new CondorUdpTestSender();
+            //CondorUdpTestSender condorUdpTestSender = new CondorUdpTestSender();
 
-            condorUdpTestSender.StartSendingTestData(500);
+            //condorUdpTestSender.StartSendingTestData(500);
             //Task.Run(() => UpdateVerticalSpeed());
         }
 

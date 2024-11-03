@@ -321,6 +321,13 @@ namespace FlightInstruments
             }
         }
 
+        protected override double NormalizeValue(double val)
+        {
+            if (val > 10) return 10;
+            if (val < -10) return -10;
+            return val;
+        }
+
         protected override void OnUDPDataReceived(string udpData)
         {
             try
@@ -332,7 +339,7 @@ namespace FlightInstruments
                 if (jsonObject.TryGetValue("vario", out JToken? varioToken) && varioToken != null && varioToken.Type == JTokenType.Float)
                 {
                     double val = varioToken.ToObject<double>();
-                    TargetValue = val; // Update the property based on JSON data
+                    TargetValue = val * 1.94; // Update the property based on JSON data
                 }
             }
             catch (Exception ex)
